@@ -1,82 +1,96 @@
 body {
     font-family: 'Noto Serif JP', serif;
-    background-color: #f2f5eb; /* Fondo crema/verde muy claro */
-    color: #3b4d2e; /* Texto verde oliva oscuro */
+    background-color: #f2f5eb;
+    color: #3b4d2e;
     margin: 0;
-    padding: 30px 20px;
+    padding: 15px 20px;
+    overflow: hidden; /* Bloquea las barras de desplazamiento */
 }
 
 .contenedor-principal {
-    max-width: 1000px;
-    margin: 0 auto;
+    width: 100%;
+    height: 95vh; /* Ocupa el 95% del alto de la pantalla */
+    display: flex;
+    flex-direction: column;
 }
 
 .panel-superior {
     display: flex;
-    justify-content: space-between;
+    gap: 15px;
     align-items: center;
-    margin-bottom: 40px;
-    padding-bottom: 15px;
+    padding-bottom: 10px;
     border-bottom: 2px solid #d4dcc5;
+    margin-bottom: 15px;
+}
+
+select, button {
+    background-color: #7b8e61;
+    color: #ffffff;
+    border: none;
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-family: 'Noto Serif JP', serif;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 #marcador {
     font-size: 1.5rem;
     font-weight: 700;
-    letter-spacing: 1px;
+    margin-left: auto;
 }
 
-button {
-    background-color: #7b8e61; /* Verde oliva medio */
-    color: #ffffff;
-    border: none;
-    padding: 12px 24px;
-    font-size: 1rem;
-    font-family: 'Noto Serif JP', serif;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+#tablero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly; /* Distribuye las 4 filas equitativamente a lo alto */
 }
 
-button:hover {
-    background-color: #5d6e46; /* Verde oliva oscuro al pasar el cursor */
+.fila {
+    display: flex;
+    justify-content: center; /* Centra las 11 cartas horizontalmente */
+    width: 100%;
 }
 
-.cuadricula {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(85px, 1fr));
-    gap: 20px;
+.fila-rotada .carta {
+    transform: rotate(180deg);
+}
+
+.linea-divisoria {
+    height: 4px;
+    background-color: #7b8e61;
+    border-radius: 2px;
+    margin: 5px 0;
 }
 
 .carta {
+    width: 6.5vw; /* Escala el ancho de la carta según el ancho de la pantalla */
+    aspect-ratio: 160 / 200; /* Mantiene la proporción exacta de sus imágenes */
     background-color: #ffffff;
-    aspect-ratio: 3 / 4;
     border: 3px solid #ffffff;
     border-radius: 6px;
     cursor: pointer;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-}
-
-.carta:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+    margin-right: 0.5vw; /* Separación estándar entre cartas */
 }
 
 .carta img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 3px;
     pointer-events: none;
+}
+
+/* Espaciado adicional para formar los bloques 4-4-3 y 3-4-4 */
+.espacio-extra {
+    margin-right: 3vw;
 }
 
 .correcta {
     border-color: #7b8e61;
-    box-shadow: 0 0 10px rgba(123, 142, 97, 0.5);
+    box-shadow: 0 0 10px rgba(123, 142, 97, 0.8);
     cursor: default;
-    transform: none !important;
 }
 
 .incorrecta {
@@ -87,4 +101,14 @@ button:hover {
     0%, 100% { transform: translateX(0); }
     20%, 60% { transform: translateX(-4px); }
     40%, 80% { transform: translateX(4px); }
+}
+
+.fila-rotada .incorrecta {
+    animation: temblar-rotado 0.5s;
+}
+
+@keyframes temblar-rotado {
+    0%, 100% { transform: rotate(180deg) translateX(0); }
+    20%, 60% { transform: rotate(180deg) translateX(-4px); }
+    40%, 80% { transform: rotate(180deg) translateX(4px); }
 }

@@ -11,13 +11,20 @@
 <body>
     <div class="contenedor-principal">
         <div class="panel-superior">
+            <select id="selector-audio">
+                <option value="audio1">Pista 1</option>
+                <option value="audio2">Pista 2</option>
+                <option value="audio3">Pista 3</option>
+                <option value="audio4">Pista 4</option>
+            </select>
+            <button id="btn-mezclar">Mezclar Cartas</button>
             <button id="btn-pausa">Reproducir / Pausar</button>
             <span id="marcador">Puntuación: 0</span>
         </div>
         
-        <audio id="pista-audio" src="audio.mp3"></audio>
+        <audio id="pista-audio"></audio>
         
-        <div id="contenedor-cartas" class="cuadricula"></div>
+        <div id="tablero"></div>
     </div>
 
     <script src="script.js"></script>
