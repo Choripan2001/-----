@@ -15,16 +15,54 @@ const configuracionAudios = {
     "audio1": {
         archivo: "pista1.mp3",
         tiempos: {
-            "a": { inicio: 5.0, fin: 7.5 },
-            "ka": { inicio: 8.0, fin: 10.2 }
+            "mu": { inicio: 24.0, fin: 42.0 },
+            "chi": { inicio: 42.0, fin: 63.0 },
+            "ne": { inicio: 63.0, fin: 85.0 },
+            "to": { inicio: 85.0, fin: 106.0 },
+            "ra": { inicio: 106.0, fin: 127.0 },
+            "mi": { inicio: 127.0, fin: 149.0 },
+            "ke": { inicio: 149.0, fin: 170.0 },
+            "hi": { inicio: 170.0, fin: 192.0 },
+            "no": { inicio: 192.0, fin: 212.0 },
+            "ku": { inicio: 212.0, fin: 233.0 },
+            "ru": { inicio: 233.0, fin: 254.0 },
+            "e": { inicio: 254.0, fin: 276.0 },
+            "i": { inicio: 276.0, fin: 296.0 },
+            "yo": { inicio: 296.0, fin: 316.0 },
+            "nu": { inicio: 316.0, fin: 337.0 },
+            "wa": { inicio: 337.0, fin: 357.0 },
+            "ma": { inicio: 357.0, fin: 377.0 },
+            "ya": { inicio: 377.0, fin: 395.0 },
+            "he": { inicio: 395.0, fin: 415.0 },
+            "re": { inicio: 415.0, fin: 437.0 },
+            "me": { inicio: 437.0, fin: 455.0 },
+            "te": { inicio: 455.0, fin: 476.0 },
+            "ri": { inicio: 476.0, fin: 496.0 },
+            "mo": { inicio: 496.0, fin: 517.0 },
+            "se": { inicio: 517.0, fin: 538.0 },
+            "a": { inicio: 538.0, fin: 559.0 },
+            "ha": { inicio: 559.0, fin: 579.0 },
+            "shi": { inicio: 579.0, fin: 599.0 },
+            "yu": { inicio: 599.0, fin: 620.0 },
+            "su": { inicio: 620.0, fin: 639.0 },
+            "so": { inicio: 639.0, fin: 660.0 },
+            "na": { inicio: 660.0, fin: 682.0 },
+            "ni": { inicio: 682.0, fin: 703.0 },
+            "tsu": { inicio: 703.0, fin: 724.0 },
+            "ro": { inicio: 724.0, fin: 742.0 },
+            "ki": { inicio: 742.0, fin: 761.0 },
+            "ka": { inicio: 761.0, fin: 782.0 },
+            "sa": { inicio: 782.0, fin: 803.0 },
+            "fu": { inicio: 803.0, fin: 822.0 },
+            "ho": { inicio: 822.0, fin: 844.0 },
+            "ko": { inicio: 844.0, fin: 864.0 },
+            "ta": { inicio: 864.0, fin: 885.0 },
+            "u": { inicio: 885.0, fin: 903.0 }
         }
     },
-    "audio2": {
-        archivo: "pista2.mp3",
-        tiempos: {
-            "i": { inicio: 2.0, fin: 4.5 }
-        }
-    }
+    "audio2": { archivo: "pista2.mp3", tiempos: {} },
+    "audio3": { archivo: "pista3.mp3", tiempos: {} },
+    "audio4": { archivo: "pista4.mp3", tiempos: {} }
 };
 
 let puntuacion = 0;
