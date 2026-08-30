@@ -66,10 +66,18 @@ const configuracionAudios = {
 };
 
 let puntuacion = 0;
+let tiempoAcumulado = 0;
+let estadoCartas = {};
+
 const tablero = document.getElementById('tablero');
 const audio = document.getElementById('pista-audio');
 const selectorAudio = document.getElementById('selector-audio');
 const marcador = document.getElementById('marcador');
+const pantallaDemora = document.getElementById('tiempo-acumulado');
+
+function actualizarDemoraVisual() {
+    pantallaDemora.innerText = `Demora: ${tiempoAcumulado.toFixed(2)} s`;
+}
 
 function mezclarArreglo(arreglo) {
     const arr = [...arreglo];
@@ -83,7 +91,14 @@ function mezclarArreglo(arreglo) {
 function renderizarTablero() {
     tablero.innerHTML = '';
     puntuacion = 0;
+    tiempoAcumulado = 0;
+    estadoCartas = {};
+    
+    audio.pause();
+    audio.currentTime = 0;
+    
     marcador.innerText = `Puntuación: ${puntuacion}`;
+    actualizarDemoraVisual();
     
     const cartasMezcladas = mezclarArreglo(listaCartasBase);
     let indiceCarta = 0;
@@ -138,9 +153,14 @@ function manejarClicCarta(evento) {
     const tiempoActual = audio.currentTime;
 
     if (tiempoCarta && tiempoActual >= tiempoCarta.inicio && tiempoActual <= tiempoCarta.fin) {
-        elementoCarta.classList.add('oculta');
-        puntuacion++;
-        marcador.innerText = `Puntuación: ${puntuacion}`;
+        if (!estadoCartas[idCarta]) {
+            estadoCartas[idCarta] = true;
+            elementoCarta.classList.add('oculta');
+            puntuacion++;
+            tiempoAcumulado += (tiempoActual - tiempoCarta.inicio);
+            marcador.innerText = `Puntuación: ${puntuacion}`;
+            actualizarDemoraVisual();
+        }
     } else {
         elementoCarta.classList.add('incorrecta');
         setTimeout(() => {
@@ -149,9 +169,26 @@ function manejarClicCarta(evento) {
     }
 }
 
+// Monitoreo automático de penalizaciones
+audio.addEventListener('timeupdate', () => {
+    const audioActual = selectorAudio.value;
+    const datosTiempos = configuracionAudios[audioActual]?.tiempos;
+    if (!datosTiempos) return;
+
+    const tiempoActual = audio.currentTime;
+
+    for (const [idCarta, tiempo] of Object.entries(datosTiempos)) {
+        if (tiempoActual > tiempo.fin && !estadoCartas[idCarta]) {
+            estadoCartas[idCarta] = true;
+            tiempoAcumulado += (tiempo.fin - tiempo.inicio);
+            actualizarDemoraVisual();
+        }
+    }
+});
+
 function cargarAudioSeleccionado() {
     const audioActual = selectorAudio.value;
-    if(configuracionAudios[audioActual]) {
+    if (configuracionAudios[audioActual]) {
         audio.src = configuracionAudios[audioActual].archivo;
     }
     renderizarTablero();
@@ -164,7 +201,7 @@ document.getElementById('btn-pausa').addEventListener('click', () => {
 });
 selectorAudio.addEventListener('change', cargarAudioSeleccionado);
 audio.addEventListener('ended', () => {
-    alert(`El juego ha terminado. Puntuación final: ${puntuacion}`);
+    alert(`ゲームは終了しました スコア: ${puntuacion} - Demora total: ${tiempoAcumulado.toFixed(2)} s`);
 });
 
 cargarAudioSeleccionado();

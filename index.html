@@ -11,15 +11,21 @@
 <body>
     <div class="contenedor-principal">
         <div class="panel-superior">
-            <select id="selector-audio">
-                <option value="audio1">Pista 1</option>
-                <option value="audio2">Pista 2</option>
-                <option value="audio3">Pista 3</option>
-                <option value="audio4">Pista 4</option>
-            </select>
-            <button id="btn-mezclar">Mezclar Cartas</button>
-            <button id="btn-pausa">Reproducir / Pausar</button>
-            <span id="marcador">Puntuación: 0</span>
+            <div class="controles">
+                <select id="selector-audio">
+                    <option value="audio1">Pista 1</option>
+                    <option value="audio2">Pista 2</option>
+                    <option value="audio3">Pista 3</option>
+                    <option value="audio4">Pista 4</option>
+                </select>
+                <button id="btn-mezclar">Mezclar / Reiniciar</button>
+                <button id="btn-pausa">Reproducir / Pausar</button>
+                <img src="neco-arc.gif" alt="Neco Arc" class="gif-decorativo">
+            </div>
+            <div class="estadisticas">
+                <div id="marcador">Puntuación: 0</div>
+                <div id="tiempo-acumulado">Demora: 0.00 s</div>
+            </div>
         </div>
         
         <audio id="pista-audio"></audio>
