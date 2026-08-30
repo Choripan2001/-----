@@ -68,6 +68,11 @@ const configuracionAudios = {
 let puntuacion = 0;
 let tiempoAcumulado = 0;
 let estadoCartas = {};
+let bloqueoClic = false;
+let modoFinalActivado = false;
+let listaTiemposOrdenada = [];
+let tiemposReaccion = [];
+let cartasFalladas = [];
 
 const tablero = document.getElementById('tablero');
 const audio = document.getElementById('pista-audio');
@@ -90,9 +95,14 @@ function mezclarArreglo(arreglo) {
 
 function renderizarTablero() {
     tablero.innerHTML = '';
+    tablero.className = '';
     puntuacion = 0;
     tiempoAcumulado = 0;
     estadoCartas = {};
+    bloqueoClic = false;
+    modoFinalActivado = false;
+    tiemposReaccion = [];
+    cartasFalladas = [];
     
     audio.pause();
     audio.currentTime = 0;
@@ -106,7 +116,6 @@ function renderizarTablero() {
     for (let fila = 0; fila < 4; fila++) {
         const divFila = document.createElement('div');
         divFila.className = 'fila';
-        
         if (fila < 2) divFila.classList.add('fila-rotada');
 
         for (let columna = 0; columna < 11; columna++) {
@@ -128,7 +137,6 @@ function renderizarTablero() {
             divFila.appendChild(elementoCarta);
             indiceCarta++;
         }
-        
         tablero.appendChild(divFila);
 
         if (fila === 1) {
@@ -139,9 +147,28 @@ function renderizarTablero() {
     }
 }
 
+function activarDueloFinal() {
+    modoFinalActivado = true;
+    tablero.innerHTML = '';
+    tablero.className = 'duelo-final';
+
+    const cartasRestantes = listaCartasBase.filter(id => !estadoCartas[id]);
+
+    cartasRestantes.forEach(idCarta => {
+        const elementoCarta = document.createElement('div');
+        elementoCarta.className = 'carta';
+        elementoCarta.dataset.id = idCarta;
+        elementoCarta.innerHTML = `<img src="Imagenes/${idCarta}.jpg" alt="${idCarta}">`;
+        elementoCarta.addEventListener('click', manejarClicCarta);
+        tablero.appendChild(elementoCarta);
+    });
+}
+
 function manejarClicCarta(evento) {
+    if (bloqueoClic) return;
+    
     const elementoCarta = evento.currentTarget;
-    if (audio.paused || elementoCarta.classList.contains('oculta')) return;
+    if (audio.paused || elementoCarta.classList.contains('oculta') || elementoCarta.classList.contains('transparente')) return;
 
     const idCarta = elementoCarta.dataset.id;
     const audioActual = selectorAudio.value;
@@ -154,22 +181,33 @@ function manejarClicCarta(evento) {
 
     if (tiempoCarta && tiempoActual >= tiempoCarta.inicio && tiempoActual <= tiempoCarta.fin) {
         if (!estadoCartas[idCarta]) {
-            estadoCartas[idCarta] = true;
+            estadoCartas[idCarta] = 'acierto';
             elementoCarta.classList.add('oculta');
-            puntuacion++;
-            tiempoAcumulado += (tiempoActual - tiempoCarta.inicio);
+            
+            const demora = tiempoActual - tiempoCarta.inicio;
+            tiempoAcumulado += demora;
+            tiemposReaccion.push(demora);
+            
+            if (modoFinalActivado) {
+                puntuacion += 2;
+                document.querySelectorAll('.carta').forEach(c => c.classList.add('oculta'));
+            } else {
+                puntuacion++;
+            }
+            
             marcador.innerText = `Puntuación: ${puntuacion}`;
             actualizarDemoraVisual();
         }
     } else {
+        bloqueoClic = true;
         elementoCarta.classList.add('incorrecta');
         setTimeout(() => {
             elementoCarta.classList.remove('incorrecta');
-        }, 500);
+            bloqueoClic = false;
+        }, 1000);
     }
 }
 
-// Monitoreo automático de penalizaciones
 audio.addEventListener('timeupdate', () => {
     const audioActual = selectorAudio.value;
     const datosTiempos = configuracionAudios[audioActual]?.tiempos;
@@ -179,17 +217,36 @@ audio.addEventListener('timeupdate', () => {
 
     for (const [idCarta, tiempo] of Object.entries(datosTiempos)) {
         if (tiempoActual > tiempo.fin && !estadoCartas[idCarta]) {
-            estadoCartas[idCarta] = true;
-            tiempoAcumulado += (tiempo.fin - tiempo.inicio);
+            estadoCartas[idCarta] = 'fallo';
+            cartasFalladas.push(idCarta);
+            
+            const demora = tiempo.fin - tiempo.inicio;
+            tiempoAcumulado += demora;
+            tiemposReaccion.push(demora);
             actualizarDemoraVisual();
+
+            const cartaVisual = document.querySelector(`.carta[data-id="${idCarta}"]`);
+            if (cartaVisual) cartaVisual.classList.add('transparente');
+        }
+    }
+
+    if (listaTiemposOrdenada.length >= 43) {
+        const tiempoCarta43 = listaTiemposOrdenada[42];
+        if (tiempoActual >= tiempoCarta43.inicio && !modoFinalActivado) {
+            activarDueloFinal();
         }
     }
 });
 
 function cargarAudioSeleccionado() {
     const audioActual = selectorAudio.value;
-    if (configuracionAudios[audioActual]) {
+    const datosTiempos = configuracionAudios[audioActual]?.tiempos;
+    
+    if (datosTiempos) {
         audio.src = configuracionAudios[audioActual].archivo;
+        listaTiemposOrdenada = Object.entries(datosTiempos)
+            .map(([id, t]) => ({ id, ...t }))
+            .sort((a, b) => a.inicio - b.inicio);
     }
     renderizarTablero();
 }
@@ -200,8 +257,11 @@ document.getElementById('btn-pausa').addEventListener('click', () => {
     else audio.pause();
 });
 selectorAudio.addEventListener('change', cargarAudioSeleccionado);
+
 audio.addEventListener('ended', () => {
-    alert(`ゲームは終了しました スコア: ${puntuacion} - Demora total: ${tiempoAcumulado.toFixed(2)} s`);
+    const promedio = tiemposReaccion.length > 0 ? (tiempoAcumulado / tiemposReaccion.length).toFixed(2) : 0;
+    const listadoFallas = cartasFalladas.length > 0 ? cartasFalladas.join(', ') : 'Ninguna';
+    alert(`Reporte Final\n\nPuntuación: ${puntuacion} de 44\nPromedio de reacción: ${promedio} s\nDemora total: ${tiempoAcumulado.toFixed(2)} s\nCartas falladas: ${listadoFallas}`);
 });
 
 cargarAudioSeleccionado();

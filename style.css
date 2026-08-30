@@ -112,6 +112,12 @@ select, button {
     cursor: default;
 }
 
+.transparente {
+    opacity: 0.15;
+    pointer-events: none;
+    cursor: default;
+}
+
 .incorrecta {
     animation: temblar 0.5s;
 }
@@ -130,4 +136,19 @@ select, button {
     0%, 100% { transform: rotate(180deg) translateX(0); }
     20%, 60% { transform: rotate(180deg) translateX(-4px); }
     40%, 80% { transform: rotate(180deg) translateX(4px); }
+}
+
+.duelo-final {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    height: 100%;
+    gap: 50px;
+}
+
+.duelo-final .carta {
+    transform: none !important;
+    width: 10vw;
+    margin: 0;
 }
